@@ -5,24 +5,27 @@
 #include <math.h>
 
 //==============================================
-// Activation class
-// collection of activation functions
+enum Activation {
+    ReLU, Sigmoid // will add to this later
+};
+
 //==============================================
-class Activation {
+class ActivationFunction {
 public:
-    //==============================================
-    // RELU activation
-    // f(x) = max(0, x)
-    //==============================================
-    static double relu(const double& x) {
+    static double apply(double x, Activation activation) {
+        switch(activation) {
+            case ReLU: return _relu(x);
+            case Sigmoid: return _sigmoid(x);
+            default: return _relu(x); // default to relu
+        }
+    }
+
+private:
+    static double _relu(const double x) {
         return std::max(0.0, x);
     }
 
-    //==============================================
-    // Sigmoid activation
-    // f(x) = 1/(1 + e^-x)
-    //==============================================
-    static double sigmoid(const double& x) {
+    static double _sigmoid(const double x) {
         return 1.0/(1.0 + std::exp(-x));
     }
 };

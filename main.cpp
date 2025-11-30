@@ -1,18 +1,29 @@
-#include "neuron.hpp"
+#include "layer.hpp"
+#include "activation.hpp"
 #include "Eigen/Dense"
 #include <iostream>
+#include <random>
+
+// random number generator 
+std::random_device rd;
+std::mt19937 rand_engine(rd());
+std::uniform_real_distribution<double> distr(1, 10);
 
 int main() {
-    Eigen::VectorXd weights(3);
-    weights << 3.0, 5.0, 2.3;
+    int n = 3;
+    Eigen::VectorXd weights(n);
+    Eigen::VectorXd x(n);
 
-    double bias = 1.3;
+    for (int i=0; i<n; i++) {
+        weights(i) = distr(rand_engine); 
+        x(i) = distr(rand_engine);
+    }
 
-    Eigen::VectorXd x(3);
-    x << 1.0, 1.0, 1.0;
+    double bias = distr(rand_engine);
     
-    // create neuron
-    Neuron n = Neuron(weights, bias);
-    double forward = n.forward(x);
-    std::cout << "Forward pass: " << forward << std::endl;
+    // create single layer network with n neurons
+    Layer network = Layer(n, ReLU);
+    network.update(weights, bias);
+    double result = network.forward(x);
+    std::cout << "Forward pass result: " << result << std::endl;
 }
