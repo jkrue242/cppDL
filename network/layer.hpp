@@ -100,8 +100,10 @@ class Layer {
         Eigen::VectorXd dadx = _activation_derivative_function(*derivative_input);
         Eigen::VectorXd dLdz = upstream_gradient.cwiseProduct(dadx);
         Eigen::VectorXd dLdx = _W.transpose() * dLdz;
-        Eigen::VectorXd dLdW = dLdz * _x.transpose();
+        Eigen::MatrixXd dLdW = dLdz * _x.transpose();
         Eigen::VectorXd dLdb = dLdz;
+        _dLdW += dLdW;
+        _dLdb += dLdb;
         return dLdx;
     }
 

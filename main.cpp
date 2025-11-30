@@ -43,4 +43,32 @@ int main() {
 
     std::cout << "Starting training for " << epochs << " epochs..." << std::endl;
     std::cout << "Data size: " << num_samples << " samples." << std::endl;
+
+
+    // train 
+    for (int i = 0; i < epochs; i++) {
+        double epoch_loss = 0.0;
+        for (int j = 0; j < num_samples; j++) {
+            Eigen::VectorXd x_sample = X_train.col(j);
+            Eigen::VectorXd y_sample = Y_train.col(j);
+
+            network.clear_grads(); // clear gradients
+            network.forward(x_sample); // forward pass 
+            epoch_loss += network.compute_loss(y_sample); // compute loss 
+            network.backprop(y_sample); // backprop
+            network.apply_updates(learning_rate); // update gradients
+        }
+
+        double avg_loss = epoch_loss / num_samples;
+        std::cout << "Epoch " << i+1 << "/" << epochs << " - Avg Loss: " << avg_loss << std::endl;
+    }
+
+    std::cout << "Training complete." << std::endl;
+    std::cout << "\n--- Final Test on Sample 1 (Target: " << Y_train.col(0).transpose() << ") ---\n";
+    Eigen::VectorXd final_output = network.forward(X_train.col(0));
+    Eigen::VectorXd final_prediction = LayerwiseFunction::softmax(final_output);
+    std::cout << "Raw Output:   " << final_output.transpose() << std::endl;
+    std::cout << "Probabilities:" << final_prediction.transpose() << std::endl;
+
+    return 0;
 }

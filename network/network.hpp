@@ -46,7 +46,7 @@ class Network {
     // computes gradient of the loss with respect to 
     // the output and propagates it backwards
     //==============================================
-    void backprop(Eigen::Ref<Eigen::VectorXd>& y_true) {
+    void backprop(const Eigen::Ref<const Eigen::VectorXd>& y_true) {
         if (_outputs.empty()) { // these get stored during forward pass 
             throw std::runtime_error("Must run forward() before backprop().");
         }        
@@ -60,6 +60,15 @@ class Network {
             upstream_gradient = _layers[i]->backward(upstream_gradient); // perform backward pass 
         }
     }
+
+    //==============================================
+    // computes loss
+    //==============================================
+    double compute_loss(const Eigen::Ref<const Eigen::VectorXd>& y_true) {
+        Eigen::VectorXd y_softmax = LayerwiseFunction::softmax(_y);
+        return _loss_function->forward(y_softmax, y_true);
+    }
+
 
     //==============================================
     // applies gradient updates
