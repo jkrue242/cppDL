@@ -4,14 +4,8 @@
 #include <cmath>
 #include <cassert>
 #include <Eigen/Dense>
-
-//==============================================
-// list of functions that can be applied layer-wise i.e. applied to 
-// each neuron in the layer
-//==============================================
-enum Function {
-    ReLU, Sigmoid, Softmax, dSigmoid // will continue to add to this
-};
+#include <iostream>
+#include <stdexcept>
 
 //==============================================
 // static class  for applying any of the functions
@@ -21,24 +15,10 @@ class LayerwiseFunction {
 public:
 
     //==============================================
-    // applies any of the layer wise functions from the Function enum
-    //==============================================
-    static Eigen::VectorXd apply(const Eigen::Ref<const Eigen::VectorXd>& x, Function function) {
-        switch(function) {
-            case ReLU: return _relu(x);
-            case Sigmoid: return _sigmoid(x);
-            case Softmax: return _softmax(x);
-            case dSigmoid: return _sigmoidDerivative(x);
-            default: return _relu(x); // default to relu
-        }
-    }
-
-private:
-
-    //==============================================
     // relu
+    // f(x) = max(0, x)
     //==============================================
-    static Eigen::VectorXd _relu(const Eigen::Ref<const Eigen::VectorXd>& x) {
+    static Eigen::VectorXd relu(const Eigen::Ref<const Eigen::VectorXd>& x) {
         return x.cwiseMax(0.0);
     }
 
@@ -46,39 +26,66 @@ private:
     // sigmoid
     // f(x) = 1 / (1 + e^-x)
     //==============================================
-    static Eigen::VectorXd _sigmoid(const Eigen::Ref<const Eigen::VectorXd>& x) {
-        Eigen::VectorXd result(x.size());
-        for (int i = 0; i < x.size(); ++i) {
-            result(i) = 1.0 / (1.0 + std::exp(-x(i)));
-        }
-        return result;
+    static Eigen::VectorXd sigmoid(const Eigen::Ref<const Eigen::VectorXd>& x) {
+        return (1.0 + (-x.array()).exp()).inverse().matrix();
+    }
+
+    //==============================================   
+    // tanh
+    //==============================================
+    static Eigen::VectorXd tanh(const Eigen::Ref<const Eigen::VectorXd>& x) {
+        return x.array().tanh().matrix();
     }
 
     //==============================================
     // softmax
     //==============================================
-    static Eigen::VectorXd _softmax(const Eigen::Ref<const Eigen::VectorXd>& x) {
-        double sum = 0.0;
-        for (int i = 0; i < x.size(); i++) {
-            sum += std::exp(x(i));
-        }
-
-        Eigen::VectorXd output(x.size()); // not sure if i should be making a new object for this or not
-        for (int j = 0; j < x.size(); j++) {
-            output(j) = std::exp(x(j)) / sum;
-        }
-
-        return output;
+    static Eigen::VectorXd softmax(const Eigen::Ref<const Eigen::VectorXd>& x) {
+        double max = x.maxCoeff();
+        Eigen::VectorXd exps = (x.array() - max).exp().matrix(); // for numerical stability
+        return exps / exps.sum();
     }
 
     //==============================================
     // sigmoid derivative
     // f'(x) = f(x) * (1 - f(x))
+    // here we call it y as it takes in the output of the activation
     //==============================================
-    static Eigen::VectorXd _sigmoidDerivative(const Eigen::Ref<const Eigen::VectorXd>& x) {
-        Eigen::VectorXd sigmoid = LayerwiseFunction::apply(x, Sigmoid);
-        Eigen::VectorXd ones = Eigen::VectorXd::Ones(sigmoid.size());
-        return sigmoid.cwiseProduct(ones - sigmoid);
+    static Eigen::VectorXd sigmoidDerivative(const Eigen::Ref<const Eigen::VectorXd>& y) {
+        return y.cwiseProduct(Eigen::VectorXd::Ones(y.size()) - y);
+    }
+
+    //==============================================
+    // relu derivative
+    // f'(x) = { 0: x <= 0
+    //           1: x > 0 }
+    //==============================================
+    static Eigen::VectorXd reluDerivative(const Eigen::Ref<const Eigen::VectorXd>& x) {
+        return (x.array() > 0.0).cast<double>().matrix();
+    }
+
+    //==============================================
+    // tanh derivative
+    // f'(x) = 1 - f(x)^2
+    // same as with sigmoid, we call it y as it is the output after activation
+    //==============================================
+    static Eigen::VectorXd tanhDerivative(const Eigen::Ref<const Eigen::VectorXd>& y) {
+        return (1.0 - y.array().square()).matrix();
+    }
+
+    //==============================================
+    // general softmax derivative
+    //==============================================
+    static Eigen::VectorXd softmaxDerivative(const Eigen::Ref<const Eigen::VectorXd>& output, const Eigen::Ref<const Eigen::VectorXd>& loss_gradient) {
+        double dot_product = loss_gradient.dot(output);
+        return output.cwiseProduct(loss_gradient - Eigen::VectorXd::Constant(loss_gradient.size(), dot_product));
+    }
+
+    //==============================================
+    // softmax derivative if we are using cross entropy loss
+    //==============================================
+    static Eigen::VectorXd softmaxCrossEntropyDerivative(const Eigen::Ref<const Eigen::VectorXd>& output, const Eigen::Ref<const Eigen::VectorXd>& target) {
+        return output - target;
     }
 };
 
