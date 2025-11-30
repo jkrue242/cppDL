@@ -38,6 +38,14 @@ class Network {
         return _result;
     }
 
+    //==============================================
+    // backward pass 
+    // backpropagation by computing the gradients at each layer
+    //==============================================
+    void backward() {
+        
+    }
+
     private:
     std::vector<Layer> _layers;
     std::vector<Eigen::VectorXd> _outputs;

@@ -10,7 +10,7 @@
 // each neuron in the layer
 //==============================================
 enum Function {
-    ReLU, Sigmoid, Softmax // will continue to add to this
+    ReLU, Sigmoid, Softmax, dSigmoid // will continue to add to this
 };
 
 //==============================================
@@ -28,6 +28,7 @@ public:
             case ReLU: return _relu(x);
             case Sigmoid: return _sigmoid(x);
             case Softmax: return _softmax(x);
+            case dSigmoid: return _sigmoidDerivative(x);
             default: return _relu(x); // default to relu
         }
     }
@@ -43,18 +44,12 @@ private:
 
     //==============================================
     // sigmoid
+    // f(x) = 1 / (1 + e^-x)
     //==============================================
     static Eigen::VectorXd _sigmoid(const Eigen::Ref<const Eigen::VectorXd>& x) {
         Eigen::VectorXd result(x.size());
         for (int i = 0; i < x.size(); ++i) {
-            double val = x(i);
-
-            // for stability reasons https://stackoverflow.com/questions/51976461/optimal-way-of-defining-a-numerically-stable-sigmoid-function-for-a-list-in-python
-            if (val > 0) {
-                result(i) = 1.0 / (1.0 + std::exp(-val));
-            } else {
-                result(i) = std::exp(val) / (1.0 + std::exp(val));
-            }
+            result(i) = 1.0 / (1.0 + std::exp(-x(i)));
         }
         return result;
     }
@@ -74,6 +69,16 @@ private:
         }
 
         return output;
+    }
+
+    //==============================================
+    // sigmoid derivative
+    // f'(x) = f(x) * (1 - f(x))
+    //==============================================
+    static Eigen::VectorXd _sigmoidDerivative(const Eigen::Ref<const Eigen::VectorXd>& x) {
+        Eigen::VectorXd sigmoid = LayerwiseFunction::apply(x, Sigmoid);
+        Eigen::VectorXd ones = Eigen::VectorXd::Ones(sigmoid.size());
+        return sigmoid.cwiseProduct(ones - sigmoid);
     }
 };
 
