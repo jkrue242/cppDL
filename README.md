@@ -1,6 +1,6 @@
 # cppDL
 
-A simple C++ deep learning library for building and training neural networks. This is a work in progress.
+A simple C++ deep learning library for deep learning model development. I am working on this to improve my C++ and ML/DL fundamentals.
 
 ## Requirements
 
