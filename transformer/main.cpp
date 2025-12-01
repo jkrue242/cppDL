@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstring>
 #include "tokenizer.hpp"
+#include <Eigen/Dense>
 
 int main() {
 
@@ -19,22 +20,15 @@ int main() {
     char dataset_array[buffer_length + 1]; // null terminated so add 1
     strcpy(dataset_array, buffer.c_str());
 
-    // unique character set
+    // create tokenizer
     std::set<char> character_set(dataset_array, dataset_array + buffer_length);
     std::vector<char> character_vec(character_set.begin(), character_set.end());
-    std::cout << "Number of characters in vocabulary: " << character_vec.size() << std::endl;
-
     Tokenizer tokenizer(character_vec);
-    std::string test = "Hi im joseph";
-    std::vector<int> encoded = tokenizer.encode(test);
-    std::string decoded = tokenizer.decode(encoded);
-
-    std::cout << "Test string: " << test << std::endl;
-    std::cout << "Encoded: ";
-    for (int i = 0; i < encoded.size(); i++) {
-        std::cout<<encoded.at(i);
+    
+    // encode the dataset
+    Eigen::VectorXi dataset_encoded = tokenizer.encode(dataset_array);
+    for (int i = 0; i < dataset_encoded.size(); i++) {
+        std::cout << dataset_encoded(i);
     }
-    std::cout <<std::endl;
-    std::cout << "Decoded: " << decoded << std::endl;
     return 0;
 }

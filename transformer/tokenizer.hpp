@@ -4,6 +4,7 @@
 #include <set>
 #include <vector> 
 #include <map>
+#include <Eigen/Dense>
 
 //==============================================
 // tokenizer class 
@@ -24,27 +25,30 @@ public:
     }
 
     //==============================================
-    // encode a string into list of ints
+    // encode a string into vector of ints
     //==============================================
-    std::vector<int> encode(std::string str) {
-        std::vector<int> encoded;
+    Eigen::VectorXi encode(std::string str) {
+        Eigen::VectorXi encoded(str.size());
         for (int i = 0; i < str.size(); i++) {
-            encoded.push_back(_char_to_int_map.at(str.at(i)));
+            encoded(i) = _char_to_int_map.at(str.at(i));
         }
         return encoded;
     }
 
     //==============================================
-    // decode a list of ints to a string
+    // decode a vector of ints to a string
     //==============================================
-    std::string decode(std::vector<int> ints) {
+    std::string decode(Eigen::VectorXi ints) {
         std::string decoded;
         decoded.reserve(ints.size());
-        for (int i : ints) {
-            decoded += _characters[i];
+        for (int i = 0; i < ints.size(); i++) {
+            int token = ints(i);
+            decoded += _characters.at(token);
         }
         return decoded;
     }
+
+
 
 private:  
     std::vector<char> _characters;
