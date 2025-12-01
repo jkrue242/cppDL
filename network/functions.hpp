@@ -1,3 +1,6 @@
+//==============================================
+// joseph krueger, 2025
+//==============================================
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
 #include <algorithm>
@@ -8,8 +11,9 @@
 #include <stdexcept>
 
 //==============================================
-// static class  for applying any of the functions
-// in the Function enum
+// static class with support for a variety of 
+// layer-wise functions. mostly for activation functions. also
+// has their derivatives
 //==============================================
 class LayerwiseFunction {
 public:
@@ -86,6 +90,20 @@ public:
     //==============================================
     static Eigen::VectorXd softmaxCrossEntropyDerivative(const Eigen::Ref<const Eigen::VectorXd>& output, const Eigen::Ref<const Eigen::VectorXd>& target) {
         return output - target;
+    }
+
+    //==============================================
+    // identity function
+    //==============================================
+    static Eigen::VectorXd identity(const Eigen::Ref<const Eigen::VectorXd>& x) {
+        return x;
+    }
+
+    //==============================================
+    // identity derivative
+    //==============================================
+    static Eigen::VectorXd identityDerivative(const Eigen::Ref<const Eigen::VectorXd>& y) {
+        return Eigen::VectorXd::Constant(y.size(), 1.0);
     }
 };
 

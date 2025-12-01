@@ -1,3 +1,6 @@
+//==============================================
+// joseph krueger, 2025
+//==============================================
 #ifndef LOSS_LAYER_HPP
 #define LOSS_LAYER_HPP 
 #include <Eigen/Dense>

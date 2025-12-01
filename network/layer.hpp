@@ -1,3 +1,6 @@
+//==============================================
+// joseph krueger, 2025
+//==============================================
 #ifndef LAYER_HPP
 #define LAYER_HPP
 #include <cmath>
@@ -44,13 +47,30 @@ class Layer {
             _activation_derivative_function = LayerwiseFunction::tanhDerivative;
             _derivative_input = Y;
         }
+        else if (activation_function == "Identity") {
+            _activation_function = LayerwiseFunction::identity;
+            _activation_derivative_function = LayerwiseFunction::identityDerivative;
+            _derivative_input = Y;
+        }
         else if (activation_function == "Softmax") {
             throw std::runtime_error("Softmax activation must be implemented via the Loss function (e.g., SoftmaxCrossEntropyLoss).");
         } 
         else {
-            throw std::runtime_error("Invalid activation function. Expected one of 'ReLU', 'Sigmoid', 'Tanh', 'Softmax'");
+            throw std::runtime_error("Invalid activation function. Expected one of 'ReLU', 'Sigmoid', 'Tanh', 'Softmax', 'Identity'");
         }
     }
+
+    //==============================================
+    // getters
+    //==============================================
+    Eigen::VectorXd get_x() { return _x; }
+    Eigen::VectorXd get_z() { return _z; }
+    Eigen::VectorXd get_y() { return _y; }
+    Eigen::MatrixXd get_W() { return _W; }
+    Eigen::VectorXd get_b() { return _b; }
+    Eigen::VectorXd get_dldb() { return _dLdb; }
+    Eigen::MatrixXd get_dldW() { return _dLdW; }
+
 
     //==============================================
     // update step

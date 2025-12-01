@@ -1,3 +1,6 @@
+//==============================================
+// joseph krueger, 2025
+//==============================================
 #ifndef NETWORK_HPP
 #define NETWORK_HPP
 #include <Eigen/Dense>
@@ -7,6 +10,10 @@
 #include "functions.hpp"
 #include "loss_layer.hpp"
 
+//==============================================
+// Network class 
+// models a general neural network of an arbitrary depth. It is defined 
+// by a vector of layers (Layer) and a loss function (LossLayer)
 //==============================================
 class Network {
     public:
@@ -31,27 +38,35 @@ class Network {
         Eigen::VectorXd curr_input = x;
 
         // iterate  through all the layers
-        for (const auto& layer : _layers) {
+        for (int i = 0; i < _layers.size(); i++) {
+            auto& layer = _layers[i];
+
+            // output for the layer 
             Eigen::VectorXd layer_output = layer->forward(curr_input);
             _outputs.push_back(layer_output);
-            curr_input = layer_output;
+            
+            // if we are on the last layer, we want the linear output only
+            if (i == _layers.size()-1) {
+                _y = layer->get_z();
+            }
+            else {
+                curr_input = layer_output;
+            }
         }
-
-        _y = curr_input; // output of entire network
         return _y;
     }
 
     //==============================================
     // backpropagation
     // computes gradient of the loss with respect to 
-    // the output and propagates it backwards
+    // the output and propagates it backwards. starts with softmax
     //==============================================
     void backprop(const Eigen::Ref<const Eigen::VectorXd>& y_true) {
         if (_outputs.empty()) { // these get stored during forward pass 
             throw std::runtime_error("Must run forward() before backprop().");
         }        
 
-        // softmax  TODO: i need to maybe make this more general
+        // We always perform softmax at the end. I should probably make this more general at somepoint
         Eigen::VectorXd y_softmax = LayerwiseFunction::softmax(_y);
         Eigen::VectorXd upstream_gradient = _loss_function->backward(y_softmax, y_true); // initial graident to be propagated
         

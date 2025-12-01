@@ -10,7 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(network)
 
 # executable
-add_executable(cppDL main.cpp)
+add_executable(cppDL xor.cpp)
 
 # link to network librarys
 target_link_libraries(cppDL PRIVATE network)
