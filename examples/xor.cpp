@@ -73,6 +73,7 @@ int main() {
     X_train << 0.0, 1.0, 0.0, 1.0, 
                0.0, 0.0, 1.0, 1.0; 
 
+    // one hot encoded
     Eigen::MatrixXd Y_train(classes, 4);
     Y_train << 1.0, 0.0, 0.0, 1.0, 
                 0.0, 1.0, 1.0, 0.0;
