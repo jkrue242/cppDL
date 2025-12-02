@@ -11,6 +11,8 @@
 #include <tuple>
 #include "tokenizer.hpp"
 #include <Eigen/Dense>
+#include "network/layers/embedding.hpp"
+#include "utils/debug.hpp"
 
 thread_local std::mt19937 generator{std::random_device{}()}; // random number generator
 
@@ -82,7 +84,18 @@ int main() {
     Eigen::MatrixXf x_batch = std::get<0>(batch_tuple);
     Eigen::MatrixXf y_batch = std::get<1>(batch_tuple);
 
-    // TODO: bigram language model
+    // embedding 
+    int vocab_size = tokenizer.get_vocab_size();
+    int embedding_dim = 32; // embedding dimension
+    Embedding embedding(vocab_size, embedding_dim);
     
+    // run batch thru embedding 
+    Eigen::MatrixXf x_embedding = embedding.forward(x_batch);
+
+    print_matrix(x_batch, "x_batch", false);
+    print_matrix(x_embedding, "x_embedding", false);
+
+    
+
     return 0;
 }

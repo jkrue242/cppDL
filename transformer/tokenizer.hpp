@@ -25,6 +25,7 @@ public:
         for (int i = 0; i < characters.size(); i++) {
             _char_to_int_map[characters[i]] = i;
         }
+        _vocab_size = characters.size();
     }
 
     //==============================================
@@ -51,11 +52,17 @@ public:
         return decoded;
     }
 
+    //==============================================
+    // return vocab size
+    //==============================================
+    int get_vocab_size() { return _vocab_size; }
+
 
 
 private:  
     std::vector<char> _characters;
     std::map<char, int> _char_to_int_map;
+    int _vocab_size;
 };
 
 #endif // TOKENIZER_HPP

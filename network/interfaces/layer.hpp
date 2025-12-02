@@ -14,26 +14,14 @@ public:
     virtual ~Layer() = default;
 
     // vector interfaces default
-    virtual Eigen::VectorXf forward(const Eigen::Ref<const Eigen::VectorXf>& x) {
-        return Eigen::VectorXf();
-    }
-    virtual Eigen::VectorXf backward(const Eigen::Ref<const Eigen::VectorXf>& upstream_gradient) {
-        return Eigen::VectorXf();
-    }
-    virtual Eigen::VectorXf get_z() {
-        return Eigen::VectorXf();
-    }
+    virtual Eigen::VectorXf forward(const Eigen::Ref<const Eigen::VectorXf>& x) { return Eigen::VectorXf(); }
+    virtual Eigen::VectorXf backward(const Eigen::Ref<const Eigen::VectorXf>& upstream_gradient) { return Eigen::VectorXf(); }
+    virtual Eigen::VectorXf get_z() { return Eigen::VectorXf(); }
     
     // matrix interfaces 
-    virtual Eigen::MatrixXf forward(const Eigen::Ref<const Eigen::MatrixXf>& x) {
-        return Eigen::MatrixXf();
-    }
-    virtual Eigen::MatrixXf backward(const Eigen::Ref<const Eigen::MatrixXf>& upstream_gradient) {
-        return Eigen::MatrixXf();
-    }
-    virtual Eigen::MatrixXf get_z_matrix() {
-        return Eigen::MatrixXf();
-    }
+    virtual Eigen::MatrixXf forward(const Eigen::Ref<const Eigen::MatrixXf>& x) { return Eigen::MatrixXf(); }
+    virtual Eigen::MatrixXf backward(const Eigen::Ref<const Eigen::MatrixXf>& upstream_gradient) { return Eigen::MatrixXf(); }
+    virtual Eigen::MatrixXf get_z_matrix() { return Eigen::MatrixXf(); }
     
     // common methods
     virtual void update(float lr){}
