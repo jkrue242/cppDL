@@ -42,7 +42,8 @@ class Network {
             auto& layer = _layers[i];
 
             // output for the layer 
-            Eigen::VectorXf layer_output = layer->forward(curr_input);
+            Eigen::Ref<const Eigen::VectorXf> input_ref = curr_input;
+            Eigen::VectorXf layer_output = layer->forward(input_ref);
             _outputs.push_back(layer_output);
             
             // if we are on the last layer, we want the linear output only
@@ -72,7 +73,8 @@ class Network {
         
         for (int i = _layers.size()-1; i >= 0; i--) {
             _layers[i]->clear_grads(); // clear the gradients for the layer
-            upstream_gradient = _layers[i]->backward(upstream_gradient); // perform backward pass 
+            Eigen::Ref<const Eigen::VectorXf> gradient_ref = upstream_gradient;
+            upstream_gradient = _layers[i]->backward(gradient_ref); // perform backward pass 
         }
     }
 
