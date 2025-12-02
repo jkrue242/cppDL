@@ -1,27 +1,28 @@
 //==============================================
 // joseph krueger, 2025
 //==============================================
-#ifndef LAYER_HPP
-#define LAYER_HPP
+#ifndef LINEAR_HPP
+#define LINEAR_HPP
 #include <cmath>
 #include <algorithm>
 #include <cassert>
 #include <Eigen/Dense>
 #include <iostream>
 #include <string>
-#include "functions.hpp"
+#include "network/interfaces/layer.hpp"
+#include "network/functions.hpp"
 
 //==============================================
-// Layer class 
+// Linear layer class 
 // This models a linear layer. it is defined by a weight vector, w, 
 // of arbitrary length and a bias scalar, b. It takes in an input vector x of 
 // size N and an output vector y of size M where M is the number of neurons, such 
 // that y = a(Wx + b)
 //==============================================
-class Layer {
+class Linear: public Layer {
     public:
     //==============================================
-    Layer(int N, int M, std::string activation_function)
+    Linear(int N, int M, std::string activation_function)
     : _W(Eigen::MatrixXf::Random(M, N)) // randomly initialize weight matrix
     , _b(Eigen::VectorXf::Zero(M)) // bias set to 0 vector
     , _x(Eigen::VectorXf::Zero(N)) // input set to 0
@@ -156,4 +157,4 @@ class Layer {
 };
 
 
-#endif // LAYER_HPP
+#endif // LINEAR_HPP

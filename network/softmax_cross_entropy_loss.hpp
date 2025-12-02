@@ -4,7 +4,7 @@
 #ifndef SOFTMAX_CROSS_ENTROPY_LOSS_HPP
 #define SOFTMAX_CROSS_ENTROPY_LOSS_HPP 
 #include <Eigen/Dense>
-#include "loss_layer.hpp" 
+#include "interfaces/loss.hpp" 
 #include <limits>
 #include <cmath>
 
@@ -13,7 +13,7 @@
 // IMPORTANT: I named this SoftmaxCrossEntropyLoss because the
 // backward pass assumes that the input has already had softmax applied to it
 //==============================================
-class SoftmaxCrossEntropyLoss: public LossLayer {
+class SoftmaxCrossEntropyLoss: public Loss {
 public: 
 
     //==============================================

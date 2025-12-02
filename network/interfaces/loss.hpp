@@ -1,27 +1,18 @@
 //==============================================
 // joseph krueger, 2025
 //==============================================
-#ifndef LOSS_LAYER_HPP
-#define LOSS_LAYER_HPP 
+#ifndef LOSS_HPP
+#define LOSS_HPP 
 #include <Eigen/Dense>
 
 //==============================================
 // interface for loss layers 
 //==============================================
-class LossLayer {
+class Loss {
 public: 
-    virtual ~LossLayer() = default;
-
-    //==============================================
-    // calculates loss 
-    //==============================================
+    virtual ~Loss() = default;
     virtual float forward(const Eigen::Ref<const Eigen::VectorXf>& y_pred, const Eigen::Ref<const Eigen::VectorXf>& y_true) = 0;
-
-    //==============================================
-    // calculates initial gradient for backpropagation
-    //==============================================
     virtual Eigen::VectorXf backward(const Eigen::Ref<const Eigen::VectorXf>& y_pred, const Eigen::Ref<const Eigen::VectorXf>& y_true) = 0;
-
 };
 
-#endif // LOSS_LAYER_HPP
+#endif // LOSS_HPP

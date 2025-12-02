@@ -6,19 +6,19 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <memory>
-#include "layer.hpp"
+#include "interfaces/layer.hpp"
 #include "functions.hpp"
-#include "loss_layer.hpp"
+#include "interfaces/loss.hpp"
 
 //==============================================
 // Network class 
 // models a general neural network of an arbitrary depth. It is defined 
-// by a vector of layers (Layer) and a loss function (LossLayer)
+// by a vector of layers (Layer) and a loss function (Loss)
 //==============================================
 class Network {
     public:
     //==============================================
-    Network(std::vector<std::unique_ptr<Layer>> layers, std::unique_ptr<LossLayer> loss_function)
+    Network(std::vector<std::unique_ptr<Layer>> layers, std::unique_ptr<Loss> loss_function)
     : _layers(std::move(layers))
     , _loss_function(std::move(loss_function))
     , _y(Eigen::VectorXf::Zero(1)) 
@@ -136,7 +136,7 @@ class Network {
 
     private:
     std::vector<std::unique_ptr<Layer>> _layers;
-    std::unique_ptr<LossLayer> _loss_function;
+    std::unique_ptr<Loss> _loss_function;
     std::vector<Eigen::VectorXf> _outputs;
     Eigen::VectorXf _y; 
 };

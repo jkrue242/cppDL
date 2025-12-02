@@ -3,8 +3,9 @@
 //==============================================
 #include "network/network.hpp"
 #include "network/functions.hpp"
-#include "network/layer.hpp"
-#include "network/loss_layer.hpp"
+#include "network/interfaces/layer.hpp"
+#include "network/layers/linear.hpp"
+#include "network/interfaces/loss.hpp"
 #include "network/softmax_cross_entropy_loss.hpp"
 #include "train.hpp"
 #include "Eigen/Dense"
@@ -39,11 +40,11 @@ int main() {
 
     // build the network
     std::vector<std::unique_ptr<Layer>> layers;
-    layers.push_back(std::make_unique<Layer>(features, 16, "ReLU"));
-    layers.push_back(std::make_unique<Layer>(16, 16, "Sigmoid"));
-    layers.push_back(std::make_unique<Layer>(16, classes, "Identity")); // last layer must have the identity activation (i.e., no activation)
-    std::unique_ptr<LossLayer> loss_layer = std::make_unique<SoftmaxCrossEntropyLoss>();
-    Network network(std::move(layers), std::move(loss_layer));
+    layers.push_back(std::make_unique<Linear>(features, 16, "ReLU"));
+    layers.push_back(std::make_unique<Linear>(16, 16, "Sigmoid"));
+    layers.push_back(std::make_unique<Linear>(16, classes, "Identity")); // last layer must have the identity activation (i.e., no activation)
+    std::unique_ptr<Loss> cross_entropy = std::make_unique<SoftmaxCrossEntropyLoss>();
+    Network network(std::move(layers), std::move(cross_entropy));
 
     // train the network
     const float learning_rate = 0.1;
