@@ -7,6 +7,7 @@ A simple C++ deep learning library for deep learning model development. I am wor
 - CMake 3.13 or higher
 - C++17 compatible compiler
 - Eigen library (install via Homebrew: `brew install eigen`)
+- Boost library (install via Homebrew: `brew install boost`)
 
 ## Building
 

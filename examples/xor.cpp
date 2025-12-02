@@ -6,23 +6,20 @@
 #include "network/interfaces/layer.hpp"
 #include "network/layers/linear.hpp"
 #include "network/interfaces/loss.hpp"
-#include "network/softmax_cross_entropy_loss.hpp"
+#include "network/losses/softmax_cross_entropy_loss.hpp"
 #include "train.hpp"
 #include "Eigen/Dense"
 #include <iostream>
 #include <random>
 #include <memory>
 #include <vector>
+#include <boost/python.hpp>
 
 //==============================================
 // This is an example of training a network to 
-// learn the "XOR" function
+// learn the XOR function
 //==============================================
-
-//==============================================
-// driver
-//==============================================
-int main() {
+void train_on_xor() {
 
     // XOR dataset
     const int features = 2;
@@ -54,6 +51,19 @@ int main() {
     // evaluate on the full set
     float accuracy = network.eval(X_train, Y_train);
     std::cout << "Training accuracy: " << accuracy << std::endl;
+}
 
+//==============================================
+// driver
+//==============================================
+int main() {
+    train_on_xor();
     return 0;
+}
+
+//==============================================
+// test exposing things for python
+//==============================================
+BOOST_PYTHON_MODULE(cpDLL) {
+    boost::python::def("test_xor", train_on_xor);
 }

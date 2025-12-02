@@ -9,16 +9,21 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstdlib>
+#include <boost/filesystem.hpp>
 
 //==============================================
 // creates a directory
 //==============================================
 static void create_directory(const std::string& filepath) {
-    size_t last_slash = filepath.find_last_of("/\\");
-    if (last_slash != std::string::npos) {
-        std::string dir = filepath.substr(0, last_slash);
-        std::string cmd = "mkdir -p " + dir;
-        system(cmd.c_str());  // system call to create it
+    boost::filesystem::path file_path(filepath);
+    boost::filesystem::path dir = file_path.parent_path();
+
+    if (!dir.empty()) {
+        try {
+            boost::filesystem::create_directories(dir);
+        } catch (const boost::filesystem::filesystem_error& e) {
+            std::cerr << "[Downloader] Error creating directory: " << dir << " - " << e.what() << std::endl;
+        }
     }
 }
 
