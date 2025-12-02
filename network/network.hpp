@@ -103,6 +103,37 @@ class Network {
         }
     }
 
+    //==============================================
+    // returns the class from softmax output
+    //==============================================
+    static int get_predicted_class(const Eigen::VectorXf& probabilities) {
+        int max_index;
+        probabilities.maxCoeff(&max_index);
+        return max_index;
+    }
+
+    //==============================================
+    // evaluate the network on a given sample set.
+    // returns the accuracy over the samples
+    //==============================================
+    float eval(const Eigen::Ref<const Eigen::MatrixXf>& X, const Eigen::Ref<const Eigen::MatrixXf>& y) {
+        int samples = X.cols();
+        int n_correct = 0;
+        for (int i = 0; i < samples; i++) {
+            Eigen::VectorXf sample = X.col(i);
+            Eigen::VectorXf y_pred = forward(sample); // run sample through the network
+            Eigen::VectorXf y_true = y.col(i);
+            
+            int true_class = get_predicted_class(y_true);
+            int pred_class = get_predicted_class(y_pred);
+            if (true_class == pred_class) {
+                n_correct += 1;
+            }
+        }
+        float acc = static_cast<float>(n_correct) / samples;
+        return acc;
+    } 
+
     private:
     std::vector<std::unique_ptr<Layer>> _layers;
     std::unique_ptr<LossLayer> _loss_function;
