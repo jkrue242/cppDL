@@ -22,18 +22,19 @@ int main() {
     char dataset_array[buffer_length + 1]; // null terminated so add 1
     strcpy(dataset_array, buffer.c_str());
 
-    // create tokenizer
+    // create tokenizer and encode the dataset
     std::set<char> character_set(dataset_array, dataset_array + buffer_length);
     std::vector<char> character_vec(character_set.begin(), character_set.end());
     Tokenizer tokenizer(character_vec);
-    
-    // encode the dataset
     Eigen::VectorXi dataset_encoded = tokenizer.encode(dataset_array);
-    for (int i = 0; i < dataset_encoded.size(); i++) {
-        std::cout << dataset_encoded(i);
-    }
 
     // train/val split
+    int train_samples = dataset_encoded.size() * train_split;
+    int val_samples = dataset_encoded.size() - train_samples;
+    Eigen::VectorXi train_set = dataset_encoded.head(train_samples);
+    Eigen::VectorXi val_set = dataset_encoded.tail(val_samples);
 
+    std::cout << "Train size: " << train_set.size() << "   [" << train_set.size() << "/" << dataset_encoded.size() << " = " << 100* train_set.size()/dataset_encoded.size() << "%]" << std::endl;
+    std::cout << "Val size: " << val_set.size()  << "   [" << val_set.size() << "/" << dataset_encoded.size() << " = " << 100* val_set.size()/dataset_encoded.size() << "%]" << std::endl; 
     return 0;
 }
