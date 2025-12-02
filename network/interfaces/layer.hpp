@@ -32,7 +32,7 @@ public:
         return Eigen::MatrixXf();
     }
     virtual Eigen::MatrixXf get_z_matrix() {
-        throw std::runtime_error("get_z_matrix not implemented for this layer type");
+        return Eigen::MatrixXf();
     }
     
     // common methods
