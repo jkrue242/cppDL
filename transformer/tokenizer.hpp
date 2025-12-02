@@ -1,3 +1,6 @@
+//==============================================
+// joseph krueger, 2025
+//==============================================
 #ifndef TOKENIZER_HPP
 #define TOKENIZER_HPP 
 #include <string>

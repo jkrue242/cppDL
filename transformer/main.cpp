@@ -1,14 +1,50 @@
+//==============================================
+// joseph krueger, 2025
+//==============================================
 #include "dataset_util.h"
 #include <string>
 #include <iostream>
 #include <set>
 #include <vector>
+#include <random>
 #include <cstring>
+#include <tuple>
 #include "tokenizer.hpp"
 #include <Eigen/Dense>
 
-float train_split = 0.9;
+thread_local std::mt19937 generator{std::random_device{}()}; // random number generator
 
+
+//==============================================
+// retrieve a batch from the dataset
+// a batch is a tuple of train and val data. the input is a 1d vector (the list of tokens)
+// and the output is a tuple of matrices, which are MxN where M is the block size and N is the batch size
+//==============================================
+std::tuple<Eigen::MatrixXf, Eigen::MatrixXf> get_batch(const Eigen::Ref<const Eigen::VectorXf>& data, int batch_size, int block_size) {
+    if (data.size() < block_size + 1) {
+        throw std::runtime_error("Dataset size is too small for the requested block size.");
+    }
+    
+    int max_offset = data.size() - (block_size + 1);
+    std::uniform_int_distribution<int> distrib(0, max_offset);
+    
+    
+    // these will hold the batches 
+    Eigen::MatrixXf X(block_size, batch_size); // MxN
+    Eigen::MatrixXf y(block_size, batch_size); // MxN
+    
+    for (int i = 0; i < batch_size; i++) {
+        int rand_start_index = distrib(generator);  // random offset into the data to grab segment block
+        X.col(i) = data.segment(rand_start_index, block_size);
+        y.col(i) = data.segment(rand_start_index + 1, block_size);
+    }
+    return std::make_tuple(X, y);
+}
+
+
+//==============================================
+// driver 
+//==============================================
 int main() {
 
     // download tiny shakespeare dataset to /tmp
@@ -26,15 +62,27 @@ int main() {
     std::set<char> character_set(dataset_array, dataset_array + buffer_length);
     std::vector<char> character_vec(character_set.begin(), character_set.end());
     Tokenizer tokenizer(character_vec);
-    Eigen::VectorXi dataset_encoded = tokenizer.encode(dataset_array);
+    Eigen::VectorXf dataset_encoded = tokenizer.encode(dataset_array).cast<float>();
 
     // train/val split
-    int train_samples = dataset_encoded.size() * train_split;
+    float train_split = 0.9;
+    int train_samples = static_cast<int>(dataset_encoded.size() * train_split);
     int val_samples = dataset_encoded.size() - train_samples;
-    Eigen::VectorXi train_set = dataset_encoded.head(train_samples);
-    Eigen::VectorXi val_set = dataset_encoded.tail(val_samples);
+    Eigen::VectorXf train_set = dataset_encoded.head(train_samples);
+    Eigen::VectorXf val_set = dataset_encoded.tail(val_samples);
 
     std::cout << "Train size: " << train_set.size() << "   [" << train_set.size() << "/" << dataset_encoded.size() << " = " << 100* train_set.size()/dataset_encoded.size() << "%]" << std::endl;
     std::cout << "Val size: " << val_set.size()  << "   [" << val_set.size() << "/" << dataset_encoded.size() << " = " << 100* val_set.size()/dataset_encoded.size() << "%]" << std::endl; 
+    
+    // get batches
+    int batch_size = 4;
+    int block_size = 8;
+
+    std::tuple<Eigen::MatrixXf, Eigen::MatrixXf> batch_tuple = get_batch(train_set, batch_size, block_size);
+    Eigen::MatrixXf x_batch = std::get<0>(batch_tuple);
+    Eigen::MatrixXf y_batch = std::get<1>(batch_tuple);
+
+    // TODO: bigram language model
+    
     return 0;
 }

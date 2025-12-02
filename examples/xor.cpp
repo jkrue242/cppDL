@@ -18,11 +18,6 @@
 // learn the "XOR" function
 //==============================================
 
-// random number generator 
-std::random_device rd;
-std::mt19937 rand_engine(rd());
-std::uniform_real_distribution<float> distr(-1, 1);
-
 //==============================================
 // driver
 //==============================================
