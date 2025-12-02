@@ -20,9 +20,9 @@ public:
     // sum( t_i * log(y_i) )
     // we assume that y_true are one-hot encoded labels
     //==============================================
-    double forward(const Eigen::Ref<const Eigen::VectorXd>& y_pred, const Eigen::Ref<const Eigen::VectorXd>& y_true) {
-        double loss = 0.0;
-        double e = 1e-12; // for numerical stability
+    float forward(const Eigen::Ref<const Eigen::VectorXf>& y_pred, const Eigen::Ref<const Eigen::VectorXf>& y_true) {
+        float loss = 0.0;
+        float e = 1e-12; // for numerical stability
         for (int i = 0; i < y_pred.size(); i++) {
             loss += (y_true(i) * std::log(std::max(y_pred(i), e)));
         }
@@ -32,7 +32,7 @@ public:
     //==============================================
     // gradient assuming softmax
     //==============================================
-    Eigen::VectorXd backward(const Eigen::Ref<const Eigen::VectorXd>& y_pred, const Eigen::Ref<const Eigen::VectorXd>& y_true) {
+    Eigen::VectorXf backward(const Eigen::Ref<const Eigen::VectorXf>& y_pred, const Eigen::Ref<const Eigen::VectorXf>& y_true) {
         return y_pred - y_true;
     }
 };

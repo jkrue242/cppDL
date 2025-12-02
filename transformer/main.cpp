@@ -7,6 +7,8 @@
 #include "tokenizer.hpp"
 #include <Eigen/Dense>
 
+float train_split = 0.9;
+
 int main() {
 
     // download tiny shakespeare dataset to /tmp
@@ -30,5 +32,8 @@ int main() {
     for (int i = 0; i < dataset_encoded.size(); i++) {
         std::cout << dataset_encoded(i);
     }
+
+    // train/val split
+
     return 0;
 }
