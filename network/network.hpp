@@ -21,7 +21,7 @@ class Network {
     Network(std::vector<std::unique_ptr<Layer>> layers, std::unique_ptr<LossLayer> loss_function)
     : _layers(std::move(layers))
     , _loss_function(std::move(loss_function))
-    , _y(Eigen::VectorXd::Zero(1)) 
+    , _y(Eigen::VectorXf::Zero(1)) 
     {
         if (_layers.empty()) {
             throw std::runtime_error("Network must contain at least one layer.");
@@ -33,16 +33,16 @@ class Network {
     // performs forward pass for each layer sequentially where 
     // each layer output becomes the next layers input
     //==============================================
-    Eigen::VectorXd forward(const Eigen::Ref<const Eigen::VectorXd>& x) {
+    Eigen::VectorXf forward(const Eigen::Ref<const Eigen::VectorXf>& x) {
         _outputs.clear(); // clear current outputs for clean passthru
-        Eigen::VectorXd curr_input = x;
+        Eigen::VectorXf curr_input = x;
 
         // iterate  through all the layers
         for (int i = 0; i < _layers.size(); i++) {
             auto& layer = _layers[i];
 
             // output for the layer 
-            Eigen::VectorXd layer_output = layer->forward(curr_input);
+            Eigen::VectorXf layer_output = layer->forward(curr_input);
             _outputs.push_back(layer_output);
             
             // if we are on the last layer, we want the linear output only
@@ -61,14 +61,14 @@ class Network {
     // computes gradient of the loss with respect to 
     // the output and propagates it backwards. starts with softmax
     //==============================================
-    void backprop(const Eigen::Ref<const Eigen::VectorXd>& y_true) {
+    void backprop(const Eigen::Ref<const Eigen::VectorXf>& y_true) {
         if (_outputs.empty()) { // these get stored during forward pass 
             throw std::runtime_error("Must run forward() before backprop().");
         }        
 
         // We always perform softmax at the end. I should probably make this more general at somepoint
-        Eigen::VectorXd y_softmax = LayerwiseFunction::softmax(_y);
-        Eigen::VectorXd upstream_gradient = _loss_function->backward(y_softmax, y_true); // initial graident to be propagated
+        Eigen::VectorXf y_softmax = LayerwiseFunction::softmax(_y);
+        Eigen::VectorXf upstream_gradient = _loss_function->backward(y_softmax, y_true); // initial graident to be propagated
         
         for (int i = _layers.size()-1; i >= 0; i--) {
             _layers[i]->clear_grads(); // clear the gradients for the layer
@@ -79,8 +79,8 @@ class Network {
     //==============================================
     // computes loss
     //==============================================
-    double compute_loss(const Eigen::Ref<const Eigen::VectorXd>& y_true) {
-        Eigen::VectorXd y_softmax = LayerwiseFunction::softmax(_y);
+    float compute_loss(const Eigen::Ref<const Eigen::VectorXf>& y_true) {
+        Eigen::VectorXf y_softmax = LayerwiseFunction::softmax(_y);
         return _loss_function->forward(y_softmax, y_true);
     }
 
@@ -88,7 +88,7 @@ class Network {
     //==============================================
     // applies gradient updates
     //==============================================
-    void apply_updates(double lr) {
+    void apply_updates(float lr) {
         for (const auto& layer : _layers) {
             layer->update(lr);
         }
@@ -106,8 +106,8 @@ class Network {
     private:
     std::vector<std::unique_ptr<Layer>> _layers;
     std::unique_ptr<LossLayer> _loss_function;
-    std::vector<Eigen::VectorXd> _outputs;
-    Eigen::VectorXd _y; 
+    std::vector<Eigen::VectorXf> _outputs;
+    Eigen::VectorXf _y; 
 };
 
 

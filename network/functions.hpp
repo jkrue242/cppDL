@@ -22,7 +22,7 @@ public:
     // relu
     // f(x) = max(0, x)
     //==============================================
-    static Eigen::VectorXd relu(const Eigen::Ref<const Eigen::VectorXd>& x) {
+    static Eigen::VectorXf relu(const Eigen::Ref<const Eigen::VectorXf>& x) {
         return x.cwiseMax(0.0);
     }
 
@@ -30,23 +30,23 @@ public:
     // sigmoid
     // f(x) = 1 / (1 + e^-x)
     //==============================================
-    static Eigen::VectorXd sigmoid(const Eigen::Ref<const Eigen::VectorXd>& x) {
+    static Eigen::VectorXf sigmoid(const Eigen::Ref<const Eigen::VectorXf>& x) {
         return (1.0 + (-x.array()).exp()).inverse().matrix();
     }
 
     //==============================================   
     // tanh
     //==============================================
-    static Eigen::VectorXd tanh(const Eigen::Ref<const Eigen::VectorXd>& x) {
+    static Eigen::VectorXf tanh(const Eigen::Ref<const Eigen::VectorXf>& x) {
         return x.array().tanh().matrix();
     }
 
     //==============================================
     // softmax
     //==============================================
-    static Eigen::VectorXd softmax(const Eigen::Ref<const Eigen::VectorXd>& x) {
-        double max = x.maxCoeff();
-        Eigen::VectorXd exps = (x.array() - max).exp().matrix(); // for numerical stability
+    static Eigen::VectorXf softmax(const Eigen::Ref<const Eigen::VectorXf>& x) {
+        float max = x.maxCoeff();
+        Eigen::VectorXf exps = (x.array() - max).exp().matrix(); // for numerical stability
         return exps / exps.sum();
     }
 
@@ -55,8 +55,8 @@ public:
     // f'(x) = f(x) * (1 - f(x))
     // here we call it y as it takes in the output of the activation
     //==============================================
-    static Eigen::VectorXd sigmoidDerivative(const Eigen::Ref<const Eigen::VectorXd>& y) {
-        return y.cwiseProduct(Eigen::VectorXd::Ones(y.size()) - y);
+    static Eigen::VectorXf sigmoidDerivative(const Eigen::Ref<const Eigen::VectorXf>& y) {
+        return y.cwiseProduct(Eigen::VectorXf::Ones(y.size()) - y);
     }
 
     //==============================================
@@ -64,8 +64,8 @@ public:
     // f'(x) = { 0: x <= 0
     //           1: x > 0 }
     //==============================================
-    static Eigen::VectorXd reluDerivative(const Eigen::Ref<const Eigen::VectorXd>& x) {
-        return (x.array() > 0.0).cast<double>().matrix();
+    static Eigen::VectorXf reluDerivative(const Eigen::Ref<const Eigen::VectorXf>& x) {
+        return (x.array() > 0.0).cast<float>().matrix();
     }
 
     //==============================================
@@ -73,37 +73,37 @@ public:
     // f'(x) = 1 - f(x)^2
     // same as with sigmoid, we call it y as it is the output after activation
     //==============================================
-    static Eigen::VectorXd tanhDerivative(const Eigen::Ref<const Eigen::VectorXd>& y) {
+    static Eigen::VectorXf tanhDerivative(const Eigen::Ref<const Eigen::VectorXf>& y) {
         return (1.0 - y.array().square()).matrix();
     }
 
     //==============================================
     // general softmax derivative
     //==============================================
-    static Eigen::VectorXd softmaxDerivative(const Eigen::Ref<const Eigen::VectorXd>& output, const Eigen::Ref<const Eigen::VectorXd>& loss_gradient) {
-        double dot_product = loss_gradient.dot(output);
-        return output.cwiseProduct(loss_gradient - Eigen::VectorXd::Constant(loss_gradient.size(), dot_product));
+    static Eigen::VectorXf softmaxDerivative(const Eigen::Ref<const Eigen::VectorXf>& output, const Eigen::Ref<const Eigen::VectorXf>& loss_gradient) {
+        float dot_product = loss_gradient.dot(output);
+        return output.cwiseProduct(loss_gradient - Eigen::VectorXf::Constant(loss_gradient.size(), dot_product));
     }
 
     //==============================================
     // softmax derivative if we are using cross entropy loss
     //==============================================
-    static Eigen::VectorXd softmaxCrossEntropyDerivative(const Eigen::Ref<const Eigen::VectorXd>& output, const Eigen::Ref<const Eigen::VectorXd>& target) {
+    static Eigen::VectorXf softmaxCrossEntropyDerivative(const Eigen::Ref<const Eigen::VectorXf>& output, const Eigen::Ref<const Eigen::VectorXf>& target) {
         return output - target;
     }
 
     //==============================================
     // identity function
     //==============================================
-    static Eigen::VectorXd identity(const Eigen::Ref<const Eigen::VectorXd>& x) {
+    static Eigen::VectorXf identity(const Eigen::Ref<const Eigen::VectorXf>& x) {
         return x;
     }
 
     //==============================================
     // identity derivative
     //==============================================
-    static Eigen::VectorXd identityDerivative(const Eigen::Ref<const Eigen::VectorXd>& y) {
-        return Eigen::VectorXd::Constant(y.size(), 1.0);
+    static Eigen::VectorXf identityDerivative(const Eigen::Ref<const Eigen::VectorXf>& y) {
+        return Eigen::VectorXf::Constant(y.size(), 1.0);
     }
 };
 

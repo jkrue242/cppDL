@@ -20,16 +20,16 @@
 // random number generator 
 std::random_device rd;
 std::mt19937 rand_engine(rd());
-std::uniform_real_distribution<double> distr(-1, 1);
+std::uniform_real_distribution<float> distr(-1, 1);
 
 // training hyperparameters
-const double learning_rate = 0.1;
+const float learning_rate = 0.1;
 const int epochs = 500;
 const int features = 2;
 const int classes = 2;
 
 // gets the class with highest output
-int get_predicted_class(const Eigen::VectorXd& probabilities) {
+int get_predicted_class(const Eigen::VectorXf& probabilities) {
     int max_index;
     probabilities.maxCoeff(&max_index);
     return max_index;
@@ -38,14 +38,14 @@ int get_predicted_class(const Eigen::VectorXd& probabilities) {
 //==============================================
 // training loop
 //==============================================
-void train(Network& network, const Eigen::Ref<const Eigen::MatrixXd>& X, const Eigen::Ref<const Eigen::MatrixXd>& y, bool verbose = true) {
+void train(Network& network, const Eigen::Ref<const Eigen::MatrixXf>& X, const Eigen::Ref<const Eigen::MatrixXf>& y, bool verbose = true) {
     int num_samples = X.cols();
     for (int i = 0; i < epochs; i++) {
-        double epoch_loss = 0.0;
+        float epoch_loss = 0.0;
 
         for (int j = 0; j < num_samples; j++) {
-            Eigen::VectorXd x_sample = X.col(j);
-            Eigen::VectorXd y_sample = y.col(j);
+            Eigen::VectorXf x_sample = X.col(j);
+            Eigen::VectorXf y_sample = y.col(j);
 
             network.forward(x_sample);                     // forward pass 
             epoch_loss += network.compute_loss(y_sample);  // compute loss 
@@ -57,7 +57,7 @@ void train(Network& network, const Eigen::Ref<const Eigen::MatrixXd>& X, const E
 
         // print loss if we are in verbose mode
         if (verbose) {
-            double avg_loss = epoch_loss / num_samples;
+            float avg_loss = epoch_loss / num_samples;
             std::cout << "Epoch " << i+1 << "/" << epochs << " - Avg Loss: " << avg_loss << std::endl;
         }
     }
@@ -69,12 +69,12 @@ void train(Network& network, const Eigen::Ref<const Eigen::MatrixXd>& X, const E
 int main() {
 
     // XOR dataset
-    Eigen::MatrixXd X_train(features, 4);
+    Eigen::MatrixXf X_train(features, 4);
     X_train << 0.0, 1.0, 0.0, 1.0, 
                0.0, 0.0, 1.0, 1.0; 
 
     // one hot encoded
-    Eigen::MatrixXd Y_train(classes, 4);
+    Eigen::MatrixXf Y_train(classes, 4);
     Y_train << 1.0, 0.0, 0.0, 1.0, 
                 0.0, 1.0, 1.0, 0.0;
 
@@ -98,12 +98,12 @@ int main() {
     
     // Test on all training samples
     for (int j = 0; j < num_samples; j++) {
-        Eigen::VectorXd x_sample = X_train.col(j);
-        Eigen::VectorXd y_true = Y_train.col(j);
+        Eigen::VectorXf x_sample = X_train.col(j);
+        Eigen::VectorXf y_true = Y_train.col(j);
 
         // result is the forward pass combined with softmax for probabiltiy
-        Eigen::VectorXd final_output = network.forward(x_sample);
-        Eigen::VectorXd final_prediction = LayerwiseFunction::softmax(final_output);
+        Eigen::VectorXf final_output = network.forward(x_sample);
+        Eigen::VectorXf final_prediction = LayerwiseFunction::softmax(final_output);
 
         // see if class prediction was correct
         int predicted_class = get_predicted_class(final_prediction);
@@ -115,7 +115,7 @@ int main() {
         }
     }
 
-    double accuracy = static_cast<double>(correct_predictions) / num_samples;
+    float accuracy = static_cast<float>(correct_predictions) / num_samples;
     std::cout << "\n--------------------------------------------\n";
     std::cout << "Total Correct: " << correct_predictions << "/" << num_samples << std::endl;
     std::cout << "Final Accuracy: " << (accuracy * 100.0) << "%\n";

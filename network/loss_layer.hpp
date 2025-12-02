@@ -15,12 +15,12 @@ public:
     //==============================================
     // calculates loss 
     //==============================================
-    virtual double forward(const Eigen::Ref<const Eigen::VectorXd>& y_pred, const Eigen::Ref<const Eigen::VectorXd>& y_true) = 0;
+    virtual float forward(const Eigen::Ref<const Eigen::VectorXf>& y_pred, const Eigen::Ref<const Eigen::VectorXf>& y_true) = 0;
 
     //==============================================
     // calculates initial gradient for backpropagation
     //==============================================
-    virtual Eigen::VectorXd backward(const Eigen::Ref<const Eigen::VectorXd>& y_pred, const Eigen::Ref<const Eigen::VectorXd>& y_true) = 0;
+    virtual Eigen::VectorXf backward(const Eigen::Ref<const Eigen::VectorXf>& y_pred, const Eigen::Ref<const Eigen::VectorXf>& y_true) = 0;
 
 };
 
